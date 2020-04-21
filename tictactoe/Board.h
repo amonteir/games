@@ -7,11 +7,11 @@ namespace angelogames {
 
 	private:
 		const int BOARD_ROWS = 3;
-		const int BOARD_COLS = 5;
+		const int BOARD_COLS = 3;
 		int m_boardSize = BOARD_ROWS * BOARD_COLS;
 
 	public:
-		char* pBoardBuffer = new char[BOARD_ROWS * BOARD_COLS];
+		char* pBoardBuffer = new char[m_boardSize];
 		int MAX_MOVES;
 
 		//char* pLastElementBoardBuffer = &pBoardBuffer[BOARD_ROWS * BOARD_COLS];
@@ -23,7 +23,7 @@ namespace angelogames {
 		void createPlayerMove(int position, char piece);
 		int getBoardSize() { return m_boardSize; }
 		bool validatePlayerMove(int playerMove);
-		char checkWinner();
+		bool checkWinner(char playerPiece, char computerPiece);
 	};
 }
 

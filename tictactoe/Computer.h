@@ -12,8 +12,9 @@ namespace angelogames {
 		Computer(int difficulty);
 		virtual ~Computer() {};
 		void setDifficulty(int level);
-		void calculateMove(char* pBoardBuffer, int boardSize); // returns position to be written in the board
+		void calculateMove(char* pBoardBuffer, int boardSize, char playerPiece); // writes computer's position in the board
 		char getComputerPiece() { return m_computerPiece; }
+		int minimax(char* pBoardBuffer, int depth, bool isMax);
 	};
 
 }

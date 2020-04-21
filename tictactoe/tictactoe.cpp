@@ -42,27 +42,29 @@ int main()
 
                 board.createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
                 board.print();
-                //player.savePlayerMove(playerMove); // saves move in player moves
-                std::cout << "Computer played:" << std::endl;
-                computer.calculateMove(board.pBoardBuffer, board.getBoardSize()); // computer plays
-                board.print();
-
-                board.MAX_MOVES--;
 
                 // check if there is a winner
-                if (board.checkWinner() == player.getPlayerPiece()) {
-                    std::cout << "Well done! You won !!!" << std::endl;
-                    break;
-                }
-                else if (board.checkWinner() == computer.getComputerPiece()) {
-                    std::cout << "Sorry but the computer won." << std::endl;
-                    break;
+                if (board.checkWinner(player.getPlayerPiece(),computer.getComputerPiece())) {
+                    break; // winner found
                 }
                 else {
-                    continue;
+                    board.MAX_MOVES--; // continue the game
                 }
+
+                std::cout << "Computer played:" << std::endl;
+                computer.calculateMove(board.pBoardBuffer, board.getBoardSize(),player.getPlayerPiece()); // computer plays
+                board.print();
+
+                // check if there is a winner
+                if(board.checkWinner(player.getPlayerPiece(), computer.getComputerPiece())){
+                    break; // winner found
+                }
+                else {
+                    board.MAX_MOVES--; // continue the game
+                }
+
             }
-            else {
+            else { // board location picked by player is taken, try a new number
                 std::cout << "Try again. " << std::flush ;
             }
 

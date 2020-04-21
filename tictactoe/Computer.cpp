@@ -14,39 +14,25 @@ namespace angelogames {
 		m_difficulty = difficulty;
 	}
 
-	void Computer::calculateMove(char* pBoardBuffer, int boardSize) {
+	void Computer::calculateMove(char* pBoardBuffer, int boardSize, char playerPiece) {
 
 		switch (m_difficulty) {
 		case 0:
 			for (int i = 0; i < boardSize; i++) {
 
-				if ((pBoardBuffer[i] != '|') && (pBoardBuffer[i] != 'X') && (pBoardBuffer[i] != m_computerPiece)) {
+				if ((pBoardBuffer[i] != playerPiece) && (pBoardBuffer[i] != m_computerPiece)) {
 					// set next available position
 					pBoardBuffer[i] = m_computerPiece;
 					//std::cout << std::endl << pBoardBuffer[i] << std::endl;
 					break;
 				}
-
 			}
 			break;
 		
 		case 1:
 
-			// to do with rand
+			// to do with minimax
 
-			int availablePositions[9] = { -1 };
-			int position = 0;
-
-			for (int i = 0; i < boardSize; i++) {
-
-				if ((pBoardBuffer[i] != '|') && (pBoardBuffer[i] != 'X') && (pBoardBuffer[i] != m_computerPiece)) {
-					// set next available position
-					pBoardBuffer[i] = m_computerPiece;
-					//std::cout << std::endl << pBoardBuffer[i] << std::endl;
-					break;
-				}
-
-			}
 			break;
 		}
 	}
@@ -54,4 +40,11 @@ namespace angelogames {
 		m_difficulty = level;
 	}
 	
+	int minimax(char* pBoardBuffer, int depth, bool isMax) {
+
+		//int score = 
+
+	}
+
+
 }
