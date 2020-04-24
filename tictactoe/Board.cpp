@@ -19,13 +19,13 @@ namespace angelogames{
 		char position = '1';
 
 		for (int i = 0; i < m_boardSize; i++) {
-			pBoardBuffer[i] = position;
+			m_pBoardBuffer[i] = position;
 			position++;
 		}
 	}
 
 	Board::~Board() {
-		delete[] pBoardBuffer;
+		delete[] m_pBoardBuffer;
 		//std::cout << "Board destroyed." << std::endl;
 	}
 
@@ -39,11 +39,11 @@ namespace angelogames{
 
 		for (int i = 0; i < m_boardSize; i++) {
 			if (counter == BOARD_COLS - 1) {
-				cout << pBoardBuffer[i] << endl;
+				cout << m_pBoardBuffer[i] << endl;
 				counter = 0;
 				continue;
 			}
-			cout << pBoardBuffer[i] << " | " << flush;
+			cout << m_pBoardBuffer[i] << " | " << flush;
 			counter++;
 
 		}
@@ -52,7 +52,7 @@ namespace angelogames{
 
 	void Board::createPlayerMove(int position, char piece) {
 
-		pBoardBuffer[position-1] = piece;
+		m_pBoardBuffer[position-1] = piece;
 
 	}
 
@@ -60,13 +60,15 @@ namespace angelogames{
 
 		char playerMoveChar = '0' + playerMove; // converts x in 'x'
 
-		if (pBoardBuffer[playerMove - 1] == playerMoveChar) {
+		if (m_pBoardBuffer[playerMove - 1] == playerMoveChar) {
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
+
+
 
 
 	bool Board::checkWinner(char playerPiece, char computerPiece) {
@@ -79,36 +81,36 @@ namespace angelogames{
 		char winner = '0';
 
 		// horizontal line of 1
-		if ((pBoardBuffer[0] == pBoardBuffer[1]) && (pBoardBuffer[0] == pBoardBuffer[2])) {
-			winner = pBoardBuffer[0];
+		if ((m_pBoardBuffer[0] == m_pBoardBuffer[1]) && (m_pBoardBuffer[0] == m_pBoardBuffer[2])) {
+			winner = m_pBoardBuffer[0];
 		}
 		// vertical line of 1
-		else if ((pBoardBuffer[0] == pBoardBuffer[3]) && (pBoardBuffer[0] == pBoardBuffer[6])) {
-			winner = pBoardBuffer[0];
+		else if ((m_pBoardBuffer[0] == m_pBoardBuffer[3]) && (m_pBoardBuffer[0] == m_pBoardBuffer[6])) {
+			winner = m_pBoardBuffer[0];
 		}
 		// diagonal of 1
-		else if ((pBoardBuffer[0] == pBoardBuffer[4]) && (pBoardBuffer[0] == pBoardBuffer[8])) {
-			winner = pBoardBuffer[0];
+		else if ((m_pBoardBuffer[0] == m_pBoardBuffer[4]) && (m_pBoardBuffer[0] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[0];
 		}
 		// vertical of 2
-		else if ((pBoardBuffer[1] == pBoardBuffer[4]) && (pBoardBuffer[1] == pBoardBuffer[7])) {
-			winner = pBoardBuffer[1];
+		else if ((m_pBoardBuffer[1] == m_pBoardBuffer[4]) && (m_pBoardBuffer[1] == m_pBoardBuffer[7])) {
+			winner = m_pBoardBuffer[1];
 		}
 		// vertical of 3
-		else if ((pBoardBuffer[2] == pBoardBuffer[5]) && (pBoardBuffer[2] == pBoardBuffer[8])) {
-			winner = pBoardBuffer[2];
+		else if ((m_pBoardBuffer[2] == m_pBoardBuffer[5]) && (m_pBoardBuffer[2] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[2];
 		}
 		// diagonal of 3
-		else if ((pBoardBuffer[2] == pBoardBuffer[4]) && (pBoardBuffer[2] == pBoardBuffer[6])) {
-			winner = pBoardBuffer[2];
+		else if ((m_pBoardBuffer[2] == m_pBoardBuffer[4]) && (m_pBoardBuffer[2] == m_pBoardBuffer[6])) {
+			winner = m_pBoardBuffer[2];
 		}
 		// horizontal line of 4
-		else if ((pBoardBuffer[3] == pBoardBuffer[4]) && (pBoardBuffer[3] == pBoardBuffer[5])) {
-			winner = pBoardBuffer[3];
+		else if ((m_pBoardBuffer[3] == m_pBoardBuffer[4]) && (m_pBoardBuffer[3] == m_pBoardBuffer[5])) {
+			winner = m_pBoardBuffer[3];
 		}
 		// horizontal line of 7
-		else if ((pBoardBuffer[6] == pBoardBuffer[7]) && (pBoardBuffer[6] == pBoardBuffer[8])) {
-			winner = pBoardBuffer[6];
+		else if ((m_pBoardBuffer[6] == m_pBoardBuffer[7]) && (m_pBoardBuffer[6] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[6];
 		}
 		else { winner = '0'; }
 
@@ -121,5 +123,57 @@ namespace angelogames{
 			return true;
 		}
 		else { return false; }
+	}
+
+	int Board::evaluateWinner(char playerPiece, char computerPiece) {
+		/*
+		0 1 2
+		3 4 5
+		6 7 8
+		*/
+
+		char winner = '0';
+
+		// horizontal line of 1
+		if ((m_pBoardBuffer[0] == m_pBoardBuffer[1]) && (m_pBoardBuffer[0] == m_pBoardBuffer[2])) {
+			winner = m_pBoardBuffer[0];
+		}
+		// vertical line of 1
+		else if ((m_pBoardBuffer[0] == m_pBoardBuffer[3]) && (m_pBoardBuffer[0] == m_pBoardBuffer[6])) {
+			winner = m_pBoardBuffer[0];
+		}
+		// diagonal of 1
+		else if ((m_pBoardBuffer[0] == m_pBoardBuffer[4]) && (m_pBoardBuffer[0] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[0];
+		}
+		// vertical of 2
+		else if ((m_pBoardBuffer[1] == m_pBoardBuffer[4]) && (m_pBoardBuffer[1] == m_pBoardBuffer[7])) {
+			winner = m_pBoardBuffer[1];
+		}
+		// vertical of 3
+		else if ((m_pBoardBuffer[2] == m_pBoardBuffer[5]) && (m_pBoardBuffer[2] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[2];
+		}
+		// diagonal of 3
+		else if ((m_pBoardBuffer[2] == m_pBoardBuffer[4]) && (m_pBoardBuffer[2] == m_pBoardBuffer[6])) {
+			winner = m_pBoardBuffer[2];
+		}
+		// horizontal line of 4
+		else if ((m_pBoardBuffer[3] == m_pBoardBuffer[4]) && (m_pBoardBuffer[3] == m_pBoardBuffer[5])) {
+			winner = m_pBoardBuffer[3];
+		}
+		// horizontal line of 7
+		else if ((m_pBoardBuffer[6] == m_pBoardBuffer[7]) && (m_pBoardBuffer[6] == m_pBoardBuffer[8])) {
+			winner = m_pBoardBuffer[6];
+		}
+		else { winner = '0'; }
+
+		if (winner == playerPiece) {
+			return -10;
+		}
+		else if (winner == computerPiece) {
+			return 10;
+		}
+		else { return 0; }
 	}
 }

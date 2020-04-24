@@ -13,7 +13,6 @@ int main()
 {
     unsigned int playerMove = 0;
 
-    Board board;
     Computer computer;
     Player player;
 
@@ -21,11 +20,11 @@ int main()
     std::cout << "Good luck" << std::endl;
     std::cout << std::endl;
 
-    board.print();
+    computer.getBoard()->print();
 
     do {
 
-        if (board.MAX_MOVES == 0){
+        if (computer.getBoard()->MAX_MOVES == 0){
             std::cout << "It's a draw!" << std::endl;
             break;
         }
@@ -38,29 +37,29 @@ int main()
         }
         else if (playerMove >= 1 && playerMove <= 9) {
         
-            if (board.validatePlayerMove(playerMove)) { // check if board location was not previously taken by player or computer
+            if (computer.getBoard()->validatePlayerMove(playerMove)) { // check if board location was not previously taken by player or computer
 
-                board.createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
-                board.print();
+                computer.getBoard()->createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
+                computer.getBoard()->print();
 
                 // check if there is a winner
-                if (board.checkWinner(player.getPlayerPiece(),computer.getComputerPiece())) {
+                if (computer.getBoard()->checkWinner(player.getPlayerPiece(), computer.getComputerPiece())) {
                     break; // winner found
                 }
                 else {
-                    board.MAX_MOVES--; // continue the game
+                    computer.getBoard()->MAX_MOVES--; // continue the game
                 }
 
                 std::cout << "Computer played:" << std::endl;
-                computer.calculateMove(board.pBoardBuffer, board.getBoardSize(),player.getPlayerPiece()); // computer plays
-                board.print();
+                computer.calculateBestMove(player.getPlayerPiece()); // computer plays
+                computer.getBoard()->print();
 
                 // check if there is a winner
-                if(board.checkWinner(player.getPlayerPiece(), computer.getComputerPiece())){
+                if(computer.getBoard()->checkWinner(player.getPlayerPiece(), computer.getComputerPiece())){
                     break; // winner found
                 }
                 else {
-                    board.MAX_MOVES--; // continue the game
+                    computer.getBoard()->MAX_MOVES--; // continue the game
                 }
 
             }

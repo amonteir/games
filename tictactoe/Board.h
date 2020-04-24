@@ -11,7 +11,7 @@ namespace angelogames {
 		int m_boardSize = BOARD_ROWS * BOARD_COLS;
 
 	public:
-		char* pBoardBuffer = new char[m_boardSize];
+		char* m_pBoardBuffer = new char[m_boardSize];
 		int MAX_MOVES;
 
 		//char* pLastElementBoardBuffer = &pBoardBuffer[BOARD_ROWS * BOARD_COLS];
@@ -22,8 +22,10 @@ namespace angelogames {
 		void print();
 		void createPlayerMove(int position, char piece);
 		int getBoardSize() { return m_boardSize; }
+		int getBoardRows() { return BOARD_ROWS; }
 		bool validatePlayerMove(int playerMove);
 		bool checkWinner(char playerPiece, char computerPiece);
+		int evaluateWinner(char playerPiece, char computerPiece);
 	};
 }
 
