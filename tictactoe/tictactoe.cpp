@@ -13,21 +13,26 @@ int main()
 {
     unsigned int playerMove = 0;
 
-    Computer computer;
+    Computer* computer = new Computer(1);
     Player player;
 
     std::cout << "Welcome to Tic-Tac-Toe!" << std::endl << "Pick your move using numbers 1-9 from the board." << std::endl << "Or press 0 to quit." << std::endl;
     std::cout << "Good luck" << std::endl;
     std::cout << std::endl;
 
-    computer.getBoard()->print();
+    //computer->getBoard()->m_pBoardBuffer[1] = 'O';
+    ///computer->getBoard()->m_pBoardBuffer[2] = 'X';
+    //computer->getBoard()->m_pBoardBuffer[3] = 'X';
+    ///computer->getBoard()->m_pBoardBuffer[4] = 'O';
+    ///computer->getBoard()->m_pBoardBuffer[5] = 'O';
+    ///computer->getBoard()->m_pBoardBuffer[6] = 'X';
+    ////computer->getBoard()->m_pBoardBuffer[7] = 'X';
+    ///computer->getBoard()->m_boardDepth = 5;
+
+
+    computer->getBoard()->print();
 
     do {
-
-        if (computer.getBoard()->MAX_MOVES == 0){
-            std::cout << "It's a draw!" << std::endl;
-            break;
-        }
 
         std::cout << "Your move: " << std::flush;
         std::cin >> playerMove;
@@ -37,29 +42,28 @@ int main()
         }
         else if (playerMove >= 1 && playerMove <= 9) {
         
-            if (computer.getBoard()->validatePlayerMove(playerMove)) { // check if board location was not previously taken by player or computer
+            if (computer->getBoard()->validatePlayerMove(playerMove)) { // check if board location was not previously taken by player or computer
 
-                computer.getBoard()->createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
-                computer.getBoard()->print();
+                computer->getBoard()->createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
+                computer->getBoard()->print();
 
                 // check if there is a winner
-                if (computer.getBoard()->checkWinner(player.getPlayerPiece(), computer.getComputerPiece())) {
-                    break; // winner found
+                if (computer->getBoard()->checkWinner(player.getPlayerPiece(), computer->getComputerPiece())) {
+                    break; // player won
                 }
-                else {
-                    computer.getBoard()->MAX_MOVES--; // continue the game
+               
+                if (computer->getBoard()->m_boardDepth == 0) {
+                    std::cout << "It's a draw!" << std::endl;
+                    break;
                 }
 
                 std::cout << "Computer played:" << std::endl;
-                computer.calculateBestMove(player.getPlayerPiece()); // computer plays
-                computer.getBoard()->print();
+                computer->calculateBestMove(player.getPlayerPiece()); // computer plays
+                computer->getBoard()->print();
 
                 // check if there is a winner
-                if(computer.getBoard()->checkWinner(player.getPlayerPiece(), computer.getComputerPiece())){
-                    break; // winner found
-                }
-                else {
-                    computer.getBoard()->MAX_MOVES--; // continue the game
+                if(computer->getBoard()->checkWinner(player.getPlayerPiece(), computer->getComputerPiece())){
+                    break; // computer won
                 }
 
             }
@@ -75,6 +79,8 @@ int main()
         
        
     } while (true);
+
+    delete computer;
 
     std::cout << "Exiting now..." << std::endl;
 

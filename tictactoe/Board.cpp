@@ -14,10 +14,9 @@ namespace angelogames{
 		7 8 9
 		*/
 
-		MAX_MOVES = m_boardSize;
+		m_boardDepth = m_boardSize;
 
 		char position = '1';
-
 		for (int i = 0; i < m_boardSize; i++) {
 			m_pBoardBuffer[i] = position;
 			position++;
@@ -53,6 +52,7 @@ namespace angelogames{
 	void Board::createPlayerMove(int position, char piece) {
 
 		m_pBoardBuffer[position-1] = piece;
+		--m_boardDepth;
 
 	}
 
@@ -68,6 +68,18 @@ namespace angelogames{
 		}
 	}
 
+	bool Board::checkBoardFull() {
+
+		char charOne = '0' + 1;
+		char charNine = '0' + 9;
+
+		for (int i = 0; i < m_boardSize; i++) {
+			if ((m_pBoardBuffer[i] >= charOne) && (m_pBoardBuffer[i] <= charNine)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 
 
@@ -125,7 +137,7 @@ namespace angelogames{
 		else { return false; }
 	}
 
-	int Board::evaluateWinner(char playerPiece, char computerPiece) {
+	int Board::evaluateMinimaxWinnerCondition(char playerPiece, char computerPiece) {
 		/*
 		0 1 2
 		3 4 5
@@ -168,12 +180,15 @@ namespace angelogames{
 		}
 		else { winner = '0'; }
 
+		// if player wins with evaluated move then return -1
 		if (winner == playerPiece) {
-			return -10;
+			return -1;
 		}
+		// if computer wins with evaluated move then return +1
 		else if (winner == computerPiece) {
-			return 10;
+			return 1;
 		}
+		// no one won
 		else { return 0; }
 	}
 }

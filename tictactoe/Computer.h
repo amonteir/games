@@ -19,7 +19,7 @@ namespace angelogames {
 		void setDifficulty(int level);
 		void calculateBestMove(char playerPiece); // writes computer's position in the board
 		char getComputerPiece() { return m_computerPiece; }
-		int minimax(int depth, bool isMax, char playerPiece);
+		int minimax(int* depth, bool isMax, char playerPiece);
 		Board* getBoard() { return m_board; }
 	};
 
