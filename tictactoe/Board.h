@@ -14,20 +14,16 @@ namespace angelogames {
 		char* m_pBoardBuffer = new char[m_boardSize];
 		int m_boardDepth;
 
-		//char* pLastElementBoardBuffer = &pBoardBuffer[BOARD_ROWS * BOARD_COLS];
-
 	public:
 		Board();
 		virtual ~Board();
+		void reset();
 		void print();
 		void createPlayerMove(int position, char piece);
 		int getBoardSize() { return m_boardSize; }
-		int getBoardRows() { return BOARD_ROWS; }
-		int getBoardCols() { return BOARD_COLS; }
 		bool validatePlayerMove(int playerMove);
-		bool checkWinner(char playerPiece, char computerPiece);
-		int evaluateMinimaxWinnerCondition(char playerPiece, char computerPiece);
-		bool checkBoardFull();
+		int evaluateWinCondition(char playerPiece, char computerPiece);
+		void generateTestBoard();
 	};
 }
 

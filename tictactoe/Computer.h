@@ -10,17 +10,17 @@ namespace angelogames {
 		const char m_computerPiece = 'O';
 		int m_bestMinimaxVal;
 		int m_bestMove;
-		Board* m_board; // computer has to know about the board
+
+	private:
+		int minimax(Board* board, int* depth, bool isMax, char playerPiece);
 
 	public:
-		Computer();
 		Computer(int difficulty);
 		virtual ~Computer();
+		void reset();
 		void setDifficulty(int level);
-		void calculateBestMove(char playerPiece); // writes computer's position in the board
+		void calculateBestMove(Board* board, char playerPiece); // writes computer's position in the board
 		char getComputerPiece() { return m_computerPiece; }
-		int minimax(int* depth, bool isMax, char playerPiece);
-		Board* getBoard() { return m_board; }
 	};
 
 }

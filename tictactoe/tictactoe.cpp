@@ -1,88 +1,91 @@
-// tictactoe.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#include "Tictactoe.h"
 
-#include <iostream>
-#include "Board.h"
-#include "Computer.h"
-#include "Player.h"
+namespace angelogames {
 
-using namespace angelogames;
+    Tictactoe::Tictactoe() {
+        human = new Player();
+        computer = new Computer(1);
+        board = new Board();
+        showMainMenu();
+        board->print();
+    }
 
+    Tictactoe::~Tictactoe() {
+        delete human;
+        delete computer;
+        delete board;
+    }
 
-int main()
-{
-    unsigned int playerMove = 0;
+    void Tictactoe::showMainMenu() {
 
-    Computer* computer = new Computer(1);
-    Player player;
-
-    std::cout << "Welcome to Tic-Tac-Toe!" << std::endl << "Pick your move using numbers 1-9 from the board." << std::endl << "Or press 0 to quit." << std::endl;
-    std::cout << "Good luck" << std::endl;
-    std::cout << std::endl;
-
-    //computer->getBoard()->m_pBoardBuffer[1] = 'O';
-    ///computer->getBoard()->m_pBoardBuffer[2] = 'X';
-    //computer->getBoard()->m_pBoardBuffer[3] = 'X';
-    ///computer->getBoard()->m_pBoardBuffer[4] = 'O';
-    ///computer->getBoard()->m_pBoardBuffer[5] = 'O';
-    ///computer->getBoard()->m_pBoardBuffer[6] = 'X';
-    ////computer->getBoard()->m_pBoardBuffer[7] = 'X';
-    ///computer->getBoard()->m_boardDepth = 5;
-
-
-    computer->getBoard()->print();
-
-    do {
-
-        std::cout << "Your move: " << std::flush;
-        std::cin >> playerMove;
-
-        if (playerMove == 0) {
-            break;
-        }
-        else if (playerMove >= 1 && playerMove <= 9) {
-        
-            if (computer->getBoard()->validatePlayerMove(playerMove)) { // check if board location was not previously taken by player or computer
-
-                computer->getBoard()->createPlayerMove(playerMove, player.getPlayerPiece()); // saves move in the board
-                computer->getBoard()->print();
-
-                // check if there is a winner
-                if (computer->getBoard()->checkWinner(player.getPlayerPiece(), computer->getComputerPiece())) {
-                    break; // player won
-                }
-               
-                if (computer->getBoard()->m_boardDepth == 0) {
-                    std::cout << "It's a draw!" << std::endl;
-                    break;
-                }
-
-                std::cout << "Computer played:" << std::endl;
-                computer->calculateBestMove(player.getPlayerPiece()); // computer plays
-                computer->getBoard()->print();
-
-                // check if there is a winner
-                if(computer->getBoard()->checkWinner(player.getPlayerPiece(), computer->getComputerPiece())){
-                    break; // computer won
-                }
-
-            }
-            else { // board location picked by player is taken, try a new number
-                std::cout << "Try again. " << std::flush ;
-            }
-
+        std::cout << std::endl << "Welcome to Tic-Tac-Toe!" << std::endl << std::endl;
+        std::cout << "Choose difficulty level, easy [0] or godlike [1]: " << std::flush;
+        int difficulty;
+        std::cin >> difficulty;
+        computer->setDifficulty(difficulty);
             
-        }
-        else {
-            std::cout << "Unrecognised option. Try again." << std::endl;
-        }
-        
-       
-    } while (true);
+        std::cout << std::endl << "Now.. pick your move using numbers 1-9 from the board." << std::endl << "Or press 0 to quit." << std::endl;
+        std::cout << "Good luck !" << std::endl;
+        std::cout << std::endl;
+    }
 
-    delete computer;
+    void Tictactoe::play() {
 
-    std::cout << "Exiting now..." << std::endl;
+        do {
+            std::cout << "Your move: " << std::flush;
+            std::cin >> human->playerMove;
 
-    return 0;
+            if (human->playerMove == 0)
+                break;
+
+            else if (human->playerMove >= 1 && human->playerMove <= 9) {
+
+                if (board->validatePlayerMove(human->playerMove)) { // check if board location was not previously taken by player or computer
+
+                    board->createPlayerMove(human->playerMove, human->getPlayerPiece()); // saves move in the board
+                    board->print();
+
+                    // check if human won with his/her move
+                    if (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == -1) {
+                        // player won
+                        std::cout << "YOU WON!!!" << std::endl;
+                        resetGame();
+                        continue;
+                    }
+                    // check if it turns out to be a draw
+                    if ((board->m_boardDepth == 0) && (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == 0)) {
+                        std::cout << "It's a draw!" << std::endl;
+                        resetGame();
+                        continue;
+                    }
+
+                    std::cout << "Computer played:" << std::endl;
+                    computer->calculateBestMove(board, human->getPlayerPiece()); // computer plays
+                    board->print();
+
+                    // check if computer won with its move
+                    if (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == 1) {
+                        // computer won
+                        std::cout << "Sorry but the computer won." << std::endl;
+                        resetGame();
+                        continue;
+                    }
+
+                }
+                else { // board location picked by player is taken, try a new number
+                    std::cout << "Position taken, try again. " << std::flush;
+                }
+            }
+            else { // user input was not correct
+                std::cout << "Unrecognised option. Try again." << std::endl;
+            }
+        } while (true);
+    }
+    
+    void Tictactoe::resetGame() {
+        board->reset();
+        computer->reset();
+        showMainMenu();
+        board->print();
+    }
 }

@@ -150,12 +150,14 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Computer.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="tictactoe.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Tictactoe.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
     <ClInclude Include="Computer.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Tictactoe.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
