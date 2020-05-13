@@ -3,7 +3,7 @@
 I'm an enthusiastic C++ programer who enjoys coding games. 
 
 List of games I have in mind: 
-1. Tictactoe
+1. [Tictactoe](https://github.com/amonteir/games/tree/master/tictactoe)
    * STATUS: fully functional windows console game available now. 2 difficulty levels: easy and godlike. For the latter, I implemented the minimax algorithm.
    * TBD: Add graphical interface using SDL framework. Work in progress.
 2. Tetris
