@@ -8,6 +8,12 @@
 namespace angelogames {
 	class Tictactoe
 	{
+	private:
+		const enum class GameState { PLAY, MAINMENU, OPTIONSMENU, QUIT };
+		std::stack<int> gameStack; // this stack is used to keep track of the current and previous states of the game (play or menus)
+
+		const enum class PlayerResult {WON, LOST, DRAW };
+
 	public:
 		// this class contains a pointer to each element of the game: the player,
 		// the human, the board and SDL2 game window
@@ -17,7 +23,7 @@ namespace angelogames {
 		Screen* screen;
 
 	private:
-		void resetGame(bool* quit);
+		void restart();
 
 	public:
 		Tictactoe();

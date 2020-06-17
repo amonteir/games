@@ -22,26 +22,33 @@ namespace angelogames {
 
 	int Computer::calculateBestMove(Board* board, char playerPiece) {
 
-		switch (m_difficulty) {
 		// computer plays the next position available in the board
-        case 0:
+        if (m_difficulty == (int)Difficulty::EASY) {
             int i;
-			for (i = 0; i < board->getBoardSize(); i++) {
+            for (i = 0; i < board->getBoardSize(); i++) {
 
-				if ((board->m_pBoardBuffer[i] != playerPiece) && (board->m_pBoardBuffer[i] != m_computerPiece)) {
-					// set next available position
+                if ((board->m_pBoardBuffer[i] != playerPiece) && (board->m_pBoardBuffer[i] != m_computerPiece)) {
+                    // set next available position
                     board->m_pBoardBuffer[i] = m_computerPiece;
                     --board->m_boardDepth; // update depth of the board ie available moves
-					break;
-				}
-			}
+                    break;
+                }
+            }
 
             return i + 1; // screen consumes 1-9 and not 0-8 as board positions
-		
+        }
+
         // computer uses minimax to compute best move
-		case 1:
-            int boardSize = board->getBoardSize();         
-            int depth = board->m_boardDepth - 1;
+        else{ 
+            int depth = -1;
+            int boardSize = -1;
+
+            if (m_difficulty == (int)Difficulty::MEDIUM)
+                depth = 2;
+            else if (m_difficulty == (int)Difficulty::HARD) {
+                boardSize = board->getBoardSize();
+                depth = board->m_boardDepth - 1;
+            }
 
             // run minimax in all empty positions and plays the optimal position
             // max at the top level is done with the if at the bottom of the for loop

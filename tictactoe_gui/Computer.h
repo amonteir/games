@@ -11,6 +11,10 @@ namespace angelogames {
 		int m_bestMinimaxVal;
 		int m_bestMove;
 
+
+	public:
+		const enum class Difficulty { EASY, MEDIUM, HARD };
+
 	private:
 		int minimax(Board* board, int* depth, bool isMax, char playerPiece);
 
@@ -19,6 +23,7 @@ namespace angelogames {
 		virtual ~Computer();
 		void reset();
 		void setDifficulty(int level);
+		int getDifficulty() { return m_difficulty; }
 		int calculateBestMove(Board* board, char playerPiece); // writes computer's position in the board and returns position for screen rendering
 		char getComputerPiece() { return m_computerPiece; }
 	};

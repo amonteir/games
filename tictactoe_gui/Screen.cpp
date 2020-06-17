@@ -7,13 +7,8 @@ namespace angelogames {
 		m_window = nullptr;
 		m_renderer = nullptr;
 
-		for (int i = 0; i < m_N_TEXTURES_MAINMENU; i++) {
-			m_texturesMainMenu[i] = nullptr;
-			m_texturesMainMenuWidth[i] = -1;
-			m_texturesMainMenuHeight[i] = -1;
-		}
 
-		m_difficulty = -1;
+		//m_OptionsMenu = -1;
 
 		if (!init())
 			std::cout << "Failed to initialize!" << std::endl;
@@ -22,20 +17,21 @@ namespace angelogames {
 
 	Screen::~Screen() {
 
-		for (int i = 0; i < m_N_TEXTURES_MAINMENU; i++) {
-			m_texturesMainMenu[i] = nullptr;
-		}
+		for (auto& menuOption : m_mainMenuTextData)
+			std::get<1>(menuOption) = nullptr;
 
-		m_textureBoard = NULL;
+		m_textureMainMenuBackground = nullptr;
+		SDL_DestroyTexture(m_textureMainMenuBackground);
+		m_textureBoard = nullptr;
 		SDL_DestroyTexture(m_textureBoard);
-		m_textureXPiece = NULL;
+		m_textureXPiece = nullptr;
 		SDL_DestroyTexture(m_textureXPiece);
-		m_textureOPiece = NULL;
+		m_textureOPiece = nullptr;
 		SDL_DestroyTexture(m_textureOPiece);
 
-		m_renderer = NULL;
+		m_renderer = nullptr;
 		SDL_DestroyRenderer(m_renderer);
-		m_window = NULL;
+		m_window = nullptr;
 		SDL_DestroyWindow(m_window);
 
 		//Quit SDL subsystems
@@ -70,8 +66,7 @@ namespace angelogames {
 				std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
 				success = false;
 			}
-			else
-			{
+			else{
 				//Create renderer for window
 				m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 				if (m_renderer == nullptr) {
@@ -116,129 +111,145 @@ namespace angelogames {
 		bool success = true;
 
 		//Open the font
-		TTF_Font* font = TTF_OpenFont("Open_Sans/OpenSans-Light.ttf", 28);
+		TTF_Font* font = TTF_OpenFont("fonts/Open_Sans/OpenSans-Light.ttf", 28);
 		if (font == nullptr){
 			std::cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
 			success = false;
 		}
 		else{
 			//Render text
-			SDL_Color textColor = { 0, 0, 0 };
+			
+			SDL_Color textColour = { 255, 255, 255 }; // white text
+			
+			createMainMenuTuples(font, textColour);
 
-			std::string mainMenuMessage = "Welcome to Tic Tac Toe";
-			if (!createTextureFromText(mainMenuMessage, textColor, font)) {
-				printf("Failed to render text texture!\n");
-				success = false;
-			}
-
-			mainMenuMessage = "Choose difficulty";
-			if (!createTextureFromText(mainMenuMessage, textColor, font)){
-				printf("Failed to render text texture!\n");
-				success = false;
-			}
-			mainMenuMessage = "Easy";
-			if (!createTextureFromText(mainMenuMessage, textColor, font)){
-				printf("Failed to render text texture!\n");
-				success = false;
-			}
-			mainMenuMessage = "Hard";
-			if (!createTextureFromText(mainMenuMessage, textColor, font)){
-				printf("Failed to render text texture!\n");
-				success = false;
-			}
-			mainMenuMessage = "Quit";
-			if (!createTextureFromText(mainMenuMessage, textColor, font)){
-				printf("Failed to render text texture!\n");
-				success = false;
-			}
+			createOptionsMenuTuples(font, textColour);
+			
 		}
 
-		TTF_CloseFont(font); // do i need this here?
+		//Load main menu background
+		m_textureMainMenuBackground = loadTexture(PATH_MENU_BG_JPG);
+		if (m_textureMainMenuBackground == nullptr) {
+			std::cout << "Error loading texture" << std::endl;
+		}
+
+		TTF_CloseFont(font); 
 
 		return success;
 	}
 
-	bool Screen::createTextureFromText(std::string textToTexture, SDL_Color textColor, TTF_Font* font) {
-		//Loading success flag
-		bool success = true;
+	void Screen::createMainMenuTuples(TTF_Font* font, SDL_Color textColour) {
+
+		std::string text[(unsigned int)MainMenu::Count] = { "TIC TAC TOE", "Play", "Options", "Quit" };
+		int x0 = 60;
+		int y_coords[(unsigned int)MainMenu::Count] = { 100, 380, 430, 480 };
+
+		for (int i = 0; i < (int)MainMenu::Count; i++) {
+
+			int textureWidth = -1;
+			int textureHeight = -1;
+
+			SDL_Texture* newTexture = createTextureFromText(text[i], font, textColour, &textureWidth, &textureHeight);
+
+			m_mainMenuTextData[i] = std::make_tuple(text[i],newTexture,
+				x0, y_coords[i], textureWidth, textureHeight);
+
+		}
+
+	}
+
+	void Screen::createOptionsMenuTuples(TTF_Font* font, SDL_Color textColour) {
+
+		std::string text[(unsigned int)OptionsMenu::Count] = { "Back", "Difficulty", "Easy", "Medium", "Hard" };
+		int x0 = 60;
+		int y_coords[(unsigned int)OptionsMenu::Count] = { 380, 430, 430, 480, 530 };
+
+		for (int i = 0; i < (int)OptionsMenu::Count; i++) {
+
+			int textureWidth = -1;
+			int textureHeight = -1;
+
+			SDL_Texture* newTexture = createTextureFromText(text[i], font, textColour, &textureWidth, &textureHeight);
+
+			if (i == 2)
+				x0 += std::get<4>(m_optionsMenuTextData[i - 1]);
+
+			if (i < 2)
+			m_optionsMenuTextData[i] = std::make_tuple(text[i], newTexture,
+				x0, y_coords[i], textureWidth, textureHeight);
+			else
+				m_optionsMenuTextData[i] = std::make_tuple(text[i], newTexture,
+					x0 + 30, y_coords[i], textureWidth, textureHeight);
+
+		}
+
+	}
+
+	SDL_Texture* Screen::createTextureFromText(std::string textToTexture, TTF_Font* font, SDL_Color textColor, int* textureWidth, int* textureHeight) {
+
+		SDL_Texture* newTexture = nullptr;
 
 		//Render text surface
-		//SDL_Surface* textSurface = TTF_RenderText_Solid(font, textToTexture.c_str(), textColor);
 		SDL_Surface* textSurface = TTF_RenderUTF8_Blended(font, textToTexture.c_str(), textColor);
 		if (textSurface == nullptr)
-		{
 			std::cout << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
-			success = false;
-		}
 		else
 		{
-			//Create texture from surface pixels
-			for (int i = 0; i < m_N_TEXTURES_MAINMENU; i++) {
-				if (m_texturesMainMenu[i] == nullptr) {
-					m_texturesMainMenu[i] = SDL_CreateTextureFromSurface(m_renderer, textSurface);
-					//get image dimensions
-					m_texturesMainMenuWidth[i] = textSurface->w;
-					m_texturesMainMenuHeight[i] = textSurface->h;
-					break;
-				}
-			}
-
+			//Create and save texture from surface pixels
+			newTexture = SDL_CreateTextureFromSurface(m_renderer, textSurface);
+			//save texture dimensions
+			*textureWidth = textSurface->w;
+			*textureHeight = textSurface->h;
+		
 			//Get rid of old surface
 			SDL_FreeSurface(textSurface);
 		}
 
-		return success;
+		return newTexture;
 	}
 
-	int Screen::renderMainMenu(SDL_Rect* clip, double angle, SDL_Point* center) {
+	void Screen::renderMainMenu(SDL_Rect* clip, double angle, SDL_Point* center) {
 
 		reset();
 
-		for (int i = 0; i < m_N_TEXTURES_MAINMENU; i++) {
-			if (m_texturesMainMenu[i] != nullptr) {
+		int padding = 20;
+		
+		// render main menu's background image
+		SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
+		SDL_RenderPresent(m_renderer);
 
-				int x = (m_SCREEN_WIDTH - m_texturesMainMenuWidth[i]) / 2;
+		//Render rectangle to hold main menu's text
+		//SDL_Rect fillRect = { x - padding, mainMenuYs[1] - padding , 200, mainMenuYs[4] - mainMenuYs[1] };
+		//SDL_SetRenderDrawColor(m_renderer, 0x20, 0x20, 0x20, 0xFF);
+		//SDL_RenderFillRect(m_renderer, &fillRect);
+
+		for (auto& menuData : m_mainMenuTextData) {
+
+			if (std::get<1>(menuData) != nullptr) {
 
 				//Set rendering space and render to screen
-				SDL_Rect renderQuad = { x, mainMenuYs[i], m_texturesMainMenuWidth[i], m_texturesMainMenuHeight[0] };
+				// Texture's x, y, w, h
+				SDL_Rect renderQuad = { std::get<2>(menuData), std::get<3>(menuData),
+					std::get<4>(menuData), std::get<5>(menuData) };
 
 				//Set clip rendering dimensions
-				if (clip != NULL)
+				if (clip != nullptr)
 				{
 					renderQuad.w = clip->w;
 					renderQuad.h = clip->h;
 				}
 
 				//Render to screen
-				SDL_RenderCopyEx(m_renderer, m_texturesMainMenu[i], clip, &renderQuad, angle, center, SDL_FLIP_NONE);
+				SDL_RenderCopyEx(m_renderer, std::get<1>(menuData), clip, &renderQuad, angle, center, SDL_FLIP_NONE);
 				SDL_RenderPresent(m_renderer);
 
 			}
-		}
-
-		bool quit = false;
-
-		SDL_Event ev;
-
-		while (!quit) {
-			//Handle events on queue
-			while (SDL_PollEvent(&ev) != 0)
-			{
-				//User requests quit
-				if (ev.type == SDL_QUIT)
-				{
-					quit = true;
-				}
-
-				m_difficulty = mainMenuEventHandler(&ev);
-
-				if (m_difficulty == EASY || m_difficulty == HARD || m_difficulty == QUIT)
-					quit = true;
-
+			else {
+				break;
 			}
 		}
 
-		return m_difficulty;
+
 	}
 
 	int Screen::mainMenuEventHandler(SDL_Event* e) {
@@ -250,24 +261,167 @@ namespace angelogames {
 			int x, y;
 			SDL_GetMouseState(&x, &y);
 
-			// easy
-			if (y >= mainMenuYs[2] && y <= (mainMenuYs[2] + 35))
-				if (x >= m_SCREEN_WIDTH / 3 && x <= 2 * m_SCREEN_WIDTH / 3)
-					return EASY;
+			// play
+			auto coords = m_mainMenuTextData[1]; // tuple: 0 = text, 1 = texture, 2 = x, 3 = y, 4 = w, 5 = h
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35))
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords)))
+					return int(MainMenu::PLAY);
 
-			// hard
-			if (y >= mainMenuYs[3] && y <= (mainMenuYs[3] + 35))
-				if (x >= m_SCREEN_WIDTH / 3 && x <= 2 * m_SCREEN_WIDTH / 3)
-					return HARD;
-
+			// options
+			coords = m_mainMenuTextData[2];
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35))
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords)))
+					return int(MainMenu::OPTIONS);
 			// quit
-			if (y >= mainMenuYs[4] && y <= (mainMenuYs[4] + 35))
-				if (x >= m_SCREEN_WIDTH / 3 && x <= 2 * m_SCREEN_WIDTH / 3)
-					return QUIT;
+			coords = m_mainMenuTextData[3];
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35))
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords)))
+					return int(MainMenu::QUIT);
 
 		}
-		return NO_OPTION;
+		return -1;
 	}
+
+	void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) {
+		
+		reset();
+
+		int padding = 20;
+
+		// render main menu's background image
+		SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
+		//SDL_RenderPresent(m_renderer);
+
+		for (auto& menuData : m_optionsMenuTextData) {
+
+			if (std::get<1>(menuData) != nullptr) {
+
+				//Set rendering space and render to screen
+				// Texture's x, y, w, h
+				SDL_Rect renderQuad = { std::get<2>(menuData), std::get<3>(menuData),
+					std::get<4>(menuData), std::get<5>(menuData) };
+
+				//Set clip rendering dimensions
+				if (clip != nullptr)
+				{
+					renderQuad.w = clip->w;
+					renderQuad.h = clip->h;
+				}
+
+				//Render to screen's back buffer
+				SDL_RenderCopyEx(m_renderer, std::get<1>(menuData), clip, &renderQuad, angle, center, SDL_FLIP_NONE);
+				
+
+			}
+			else {
+				break;
+			}
+		}
+		SDL_RenderPresent(m_renderer); 
+	}
+
+	int Screen::optionsMenuEventHandler(SDL_Event* e, int currentGameDifficulty) {
+
+		// highlights the current difficulty of the game
+		SDL_SetRenderDrawColor(m_renderer, 0, 204, 204, 0xFF);
+		auto index = -1;
+		if (currentGameDifficulty == 0) // HARDCODED, TBD
+			index = int(OptionsMenu::EASY);
+		else if (currentGameDifficulty == 1)
+			index = int(OptionsMenu::MEDIUM);
+		else if (currentGameDifficulty == 2)
+			index = int(OptionsMenu::HARD);
+
+		auto y0 = std::get<3>(m_optionsMenuTextData[index]);
+		auto y1 = y0 + std::get<5>(m_optionsMenuTextData[index]) + 2;
+		auto x0 = std::get<2>(m_optionsMenuTextData[index]);
+		auto x1 = x0 + std::get<4>(m_optionsMenuTextData[index]);
+
+		SDL_RenderDrawLine(m_renderer, x0, y1, x1, y1);
+		SDL_RenderPresent(m_renderer); // need to present it before any other events are processed
+		
+		// MOUSE EVENTS BEGIN
+		//If mouse event happened
+		if (e->type == SDL_MOUSEBUTTONUP) {
+
+			//Get mouse position
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+
+			// BACK
+			auto coords = m_optionsMenuTextData[0]; // tuple: 0 = text, 1 = texture, 2 = x, 3 = y, 4 = w, 5 = h
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35))
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords)))
+					return int(OptionsMenu::BACK);
+
+			// difficulty - easy
+			coords = m_optionsMenuTextData[(int)OptionsMenu::EASY];
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35)) {
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords))) {
+
+					if (currentGameDifficulty != 0) { // HARDCODED - NEEDS TO BE DYNAMIC
+						// highlight EASY option
+						renderOptionsMenu(NULL, 0, NULL);
+						SDL_SetRenderDrawColor(m_renderer, 0, 204, 204, 0xFF);
+						auto y0 = std::get<3>(m_optionsMenuTextData[int(OptionsMenu::EASY)]);
+						auto y1 = y0 + std::get<5>(m_optionsMenuTextData[int(OptionsMenu::EASY)]) + 2;
+						auto x0 = std::get<2>(m_optionsMenuTextData[int(OptionsMenu::EASY)]);
+						auto x1 = x0 + std::get<4>(m_optionsMenuTextData[int(OptionsMenu::EASY)]);
+
+						SDL_RenderDrawLine(m_renderer, x0, y1, x1, y1);
+						SDL_RenderPresent(m_renderer);
+					}
+					return int(OptionsMenu::EASY);
+				}
+			}
+
+			// difficulty - medium
+			coords = m_optionsMenuTextData[(int)OptionsMenu::MEDIUM];
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35)) {
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords))) {
+
+					if (currentGameDifficulty != 1) { // HARDCODED - NEEDS TO BE DYNAMIC
+						// highlight medium option
+						renderOptionsMenu(NULL, 0, NULL);
+						SDL_SetRenderDrawColor(m_renderer, 0, 204, 204, 0xFF);
+						auto y0 = std::get<3>(m_optionsMenuTextData[int(OptionsMenu::MEDIUM)]);
+						auto y1 = y0 + std::get<5>(m_optionsMenuTextData[int(OptionsMenu::MEDIUM)]) + 2;
+						auto x0 = std::get<2>(m_optionsMenuTextData[int(OptionsMenu::MEDIUM)]);
+						auto x1 = x0 + std::get<4>(m_optionsMenuTextData[int(OptionsMenu::MEDIUM)]);
+
+						SDL_RenderDrawLine(m_renderer, x0, y1, x1, y1);
+						SDL_RenderPresent(m_renderer);
+					}
+
+					return int(OptionsMenu::MEDIUM);
+				}
+			}
+
+			// difficulty - hard
+			coords = m_optionsMenuTextData[(int)OptionsMenu::HARD];
+			if (y >= std::get<3>(coords) && y <= (std::get<3>(coords) + 35)) {
+				if (x >= std::get<2>(coords) && x <= (std::get<2>(coords) + std::get<4>(coords))) {
+
+					if (currentGameDifficulty != 2) { // HARDCODED - NEEDS TO BE DYNAMIC
+						// highlight medium option
+						renderOptionsMenu(NULL, 0, NULL);
+						SDL_SetRenderDrawColor(m_renderer, 0, 204, 204, 0xFF);
+						auto y0 = std::get<3>(m_optionsMenuTextData[int(OptionsMenu::HARD)]);
+						auto y1 = y0 + std::get<5>(m_optionsMenuTextData[int(OptionsMenu::HARD)]) + 2;
+						auto x0 = std::get<2>(m_optionsMenuTextData[int(OptionsMenu::HARD)]);
+						auto x1 = x0 + std::get<4>(m_optionsMenuTextData[int(OptionsMenu::HARD)]);
+
+						SDL_RenderDrawLine(m_renderer, x0, y1, x1, y1);
+						SDL_RenderPresent(m_renderer);
+					}
+
+					return int(OptionsMenu::HARD);
+				}
+			}
+		}
+		return -1;
+	}
+
 
 	bool Screen::loadGameBoard() {
 
@@ -277,20 +431,20 @@ namespace angelogames {
 		//Load PNG texture
 		m_textureBoard = loadTexture(PATH_BOARD_PNG);
 
-		if (m_textureBoard == NULL) {
+		if (m_textureBoard == nullptr) {
 			std::cout << "Error loading texture" << std::endl;
 			success = false;
 		}
 
 		// load piece textures to memory to be used by the render when player or computer plays
 		m_textureXPiece = loadTexture(PATH_X_PIECE_PNG);
-		if (m_textureXPiece == NULL){
+		if (m_textureXPiece == nullptr){
 			printf("Failed to load texture image!\n");
 		success = false;
 		}
 
 		m_textureOPiece = loadTexture(PATH_O_PIECE_PNG);
-		if (m_textureOPiece == NULL){
+		if (m_textureOPiece == nullptr){
 			printf("Failed to load texture image!\n");
 			success = false;
 		}
@@ -302,9 +456,17 @@ namespace angelogames {
 
 		reset();
 
-		SDL_RenderCopy(m_renderer, m_textureBoard, NULL, NULL);
-		SDL_RenderPresent(m_renderer);
+		//SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
+		//SDL_RenderPresent(m_renderer);
 
+		//SDL_Rect renderQuad = { m_SCREEN_WIDTH/2 - m_BOARD_WIDTH/2, m_SCREEN_HEIGHT/2 - m_BOARD_HEIGHT/2, 
+			//					m_BOARD_WIDTH, m_BOARD_HEIGHT };
+
+		//SDL_RenderCopy(m_renderer, m_textureBoard, nullptr, &renderQuad);
+
+		SDL_RenderCopy(m_renderer, m_textureBoard, nullptr, nullptr);
+		SDL_RenderPresent(m_renderer);
+		
 		// game's event handler is called in the game loop outside this class
 	}
 	
@@ -312,17 +474,17 @@ namespace angelogames {
 	SDL_Texture* Screen::loadTexture(std::string path) {
 
 		//The final texture
-		SDL_Texture* newTexture = NULL;
+		SDL_Texture* newTexture = nullptr;
 		//Load image at specified path
 		SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 
-		if (loadedSurface == NULL)
+		if (loadedSurface == nullptr)
 			std::cout << "Error" << std::endl;
 		else {
 			//Create texture from surface pixels
 			newTexture = SDL_CreateTextureFromSurface(m_renderer, loadedSurface);
 
-			if (newTexture == NULL)
+			if (newTexture == nullptr)
 				std::cout << "Error" << std::endl;
 
 			SDL_FreeSurface(loadedSurface);
@@ -331,65 +493,69 @@ namespace angelogames {
 		return newTexture;
 	}
 
-	// 
-	SDL_Rect Screen::calculateRectangle(int position) {
+	// obtains the coords for the board position picked by the player
+	SDL_Rect Screen::getPlayerMove(int position) {
+
 		SDL_Rect stretchRect = { 0, 0, 0, 0 };
+
+		auto x0 = m_SCREEN_WIDTH / 2 - m_BOARD_WIDTH / 2;
+		auto y0 = m_SCREEN_HEIGHT / 2 - m_BOARD_HEIGHT / 2;
 
 		// this code is specific to the tic tac toe board layout
 		switch (position) {
 		case 1:
-			stretchRect.x = 0;
-			stretchRect.y = 0;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0;
+			stretchRect.y = y0;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 2:
-			stretchRect.x = m_SCREEN_WIDTH / 3;
-			stretchRect.y = 0;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + m_BOARD_WIDTH / 3;
+			stretchRect.y = y0;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 3:
-			stretchRect.x = 2 * m_SCREEN_WIDTH / 3;
-			stretchRect.y = 0;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + 2 * m_BOARD_WIDTH / 3;
+			stretchRect.y = y0;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 4:
-			stretchRect.x = 0;
-			stretchRect.y = m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0;
+			stretchRect.y = y0 + m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 5:
-			stretchRect.x = m_SCREEN_WIDTH / 3;
-			stretchRect.y = m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + m_BOARD_WIDTH / 3;
+			stretchRect.y = y0 + m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 6:
-			stretchRect.x = 2 * m_SCREEN_WIDTH / 3;
-			stretchRect.y = m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + 2 * m_BOARD_WIDTH / 3;
+			stretchRect.y = y0 + m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 7:
-			stretchRect.x = 0;
-			stretchRect.y = 2 * m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0;
+			stretchRect.y = y0 + 2 * m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 8:
-			stretchRect.x = m_SCREEN_WIDTH / 3;
-			stretchRect.y = 2 * m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + m_BOARD_WIDTH / 3;
+			stretchRect.y = y0 + 2 * m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		case 9:
-			stretchRect.x = 2 * m_SCREEN_WIDTH / 3;
-			stretchRect.y = 2 * m_SCREEN_HEIGHT / 3;
-			stretchRect.w = m_SCREEN_WIDTH / 3;
-			stretchRect.h = m_SCREEN_HEIGHT / 3;
+			stretchRect.x = x0 + 2 * m_BOARD_WIDTH / 3;
+			stretchRect.y = y0 + 2 * m_BOARD_HEIGHT / 3;
+			stretchRect.w = m_BOARD_WIDTH / 3;
+			stretchRect.h = m_BOARD_HEIGHT / 3;
 			break;
 		}
 
@@ -408,42 +574,42 @@ namespace angelogames {
 			int x, y;
 			SDL_GetMouseState(&x, &y);
 
+			auto x0 = m_SCREEN_WIDTH / 2 - m_BOARD_WIDTH / 2;
+			auto y0 = m_SCREEN_HEIGHT / 2 - m_BOARD_HEIGHT / 2;
+
 			// check position of the mouse in the board and saves the position value in local boardPosition variable
-			if (y >= 0 && y <= (m_SCREEN_HEIGHT / 3 + pixelsOffset)) {
-				if ((x >= pixelsOffset) && (x <= (m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+			if (y >= y0 && y <= (y0 + m_BOARD_HEIGHT / 3 - pixelsOffset)) {
+				if ((x >= x0 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 1;
 				}
-				else if ((x >= m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (2 * m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+				else if ((x >= x0 + m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + 2 * m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 2;
 				}
-				else if ((x >= 2 * m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (m_SCREEN_WIDTH - pixelsOffset))) {
+				else if ((x >= x0 + 2 * m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH - pixelsOffset))) {
 					boardPosition = 3;
 				}
-				else { boardPosition = -1; }
 			}
-			else if (y >= (m_SCREEN_HEIGHT / 3 + pixelsOffset) && y <= (2 * m_SCREEN_HEIGHT / 3 - pixelsOffset)) {
-				if ((x >= pixelsOffset) && (x <= (m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+			else if (y >= (y0 + m_BOARD_HEIGHT / 3 + pixelsOffset) && y <= (y0 + 2 * m_BOARD_HEIGHT / 3 - pixelsOffset)) {
+				if ((x >= x0 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 4;
 				}
-				else if ((x >= m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (2 * m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+				else if ((x >= x0 + m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + 2 * m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 5;
 				}
-				else if ((x >= 2 * m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (m_SCREEN_WIDTH - pixelsOffset))) {
+				else if ((x >= x0 + 2 * m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH - pixelsOffset))) {
 					boardPosition = 6;
 				}
-				else { boardPosition = -1; }
 			}
-			else if (y >= (2 * m_SCREEN_HEIGHT / 3 + pixelsOffset) && y <= (m_SCREEN_HEIGHT - pixelsOffset)) {
-				if ((x >= pixelsOffset) && (x <= (m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+			else if (y >= (y0 + 2 * m_BOARD_HEIGHT / 3 + pixelsOffset) && y <= (y0 + m_BOARD_HEIGHT - pixelsOffset)) {
+				if ((x >= x0 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 7;
 				}
-				else if ((x >= m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (2 * m_SCREEN_WIDTH / 3 - pixelsOffset))) {
+				else if ((x >= x0 + m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + 2 * m_BOARD_WIDTH / 3 - pixelsOffset))) {
 					boardPosition = 8;
 				}
-				else if ((x >= 2 * m_SCREEN_WIDTH / 3 + pixelsOffset) && (x <= (m_SCREEN_WIDTH - pixelsOffset))) {
+				else if ((x >= x0 + 2 * m_BOARD_WIDTH / 3 + pixelsOffset) && (x <= (x0 + m_BOARD_WIDTH - pixelsOffset))) {
 					boardPosition = 9;
-				}
-				else { boardPosition = -1; }
+				}			
 			}
 			else { boardPosition = -1; }
 		}
@@ -454,22 +620,32 @@ namespace angelogames {
 
 	void Screen::renderBoardPiece(int boardPosition, std::string player) {
 
-		SDL_Rect stretchRect = calculateRectangle(boardPosition); // obtains the coords for the board position picked by the player
+		SDL_Rect stretchRect = getPlayerMove(boardPosition); // obtains the coords for the board position picked by the player
 
 		if (player == "human")
-			SDL_RenderCopy(m_renderer, m_textureXPiece, NULL, &stretchRect);
+			SDL_RenderCopy(m_renderer, m_textureXPiece, nullptr, &stretchRect);
 		if (player == "computer")
-			SDL_RenderCopy(m_renderer, m_textureOPiece, NULL, &stretchRect);
+			SDL_RenderCopy(m_renderer, m_textureOPiece, nullptr, &stretchRect);
 		
 		SDL_RenderPresent(m_renderer);
+	}
+
+	void Screen::renderResults(int result) {
+		reset();
+
+		// render main menu's background image
+		SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
+		SDL_RenderPresent(m_renderer);
+
+
+
 	}
 
 	void Screen::reset() {
 		//reset renderer color
 		SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-		/* Clear the entire screen to our selected color. */
+		/* Clear the entire screen's back buffer to our selected color. */
 		SDL_RenderClear(m_renderer);
-		SDL_RenderPresent(m_renderer);
-
 	}
+
 }
