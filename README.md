@@ -7,7 +7,7 @@ that games can teach you a lot about programming. And I love games. So it's a 2x
 I'm sure.
 
 The next question was, which game do I choose as my first game? I picked Tic Tac Toe because it's one of the simplest
-games you can find in terms of board size and game complexity. It also felt appropriate to develop a console version before venturing into graphics APIs.
+games you can find in terms of board size and game logic and complexity. It also felt appropriate to develop a console version before venturing into graphics APIs.
 
 So this is the list of games I want to develop: 
 1. [Tictactoe](https://en.wikipedia.org/wiki/Tic-tac-toe)
