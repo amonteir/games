@@ -12,8 +12,7 @@ games you can find in terms of board size and game logic and complexity. It also
 So this is the list of games I want to develop: 
 1. [Tictactoe](https://en.wikipedia.org/wiki/Tic-tac-toe)
    * [Console version](https://github.com/amonteir/games/tree/master/tictactoe): fully functional windows console game available now. Written in C++98. 2 difficulty levels: easy and godlike. For the latter, I implemented the [Minimax](https://en.wikipedia.org/wiki/Minimax) algorithm with depth to improve the performance of the AI - it's impossible to beat the machine, you can either draw or lose. Try for yourself :)
-   * [GUI version](https://github.com/amonteir/games/tree/master/tictactoe_gui): Built on top of the console version but now with a  graphical interface using [SDL](https://www.libsdl.org/). 
-   <br/>Added C++11 features like a stack to control the game loop, auto, tuples, and enum classes for code readibility and manipulation. 
+   * [GUI version](https://github.com/amonteir/games/tree/master/tictactoe_gui): Built on top of the console version but now with a  graphical interface using [SDL](https://www.libsdl.org/) and an additional Medium game difficulty. In terms code I've added C++11 features like a stack to control the game loop, auto, tuples, and enum classes for code readibility and data manipulation. 
    <br/>Work in progress: add notifications like player won/computer won etc, add audio, add error log file.
 2. Pac-Man
 3. Basic platforms game
