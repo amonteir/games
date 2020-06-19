@@ -1,6 +1,6 @@
 # Tic Tac Toe game in C++98
 
-I appreciate that my implementation might not be the most optimised because, at this point, I'm solely interested in functionality rather than speed, code elegance or modern C++ features. 
+I appreciate that my implementation might not be the most optimised because, at this point, I'm solely interested in functionality and learning C++ rather than speed, code elegance or modern C++ features. 
 
 I decided to create 4 classes to keep things a bit more readable and modular: 
 - Board: contains the board information and the methods that check the game status. It is also here that I calculate winning condition.
