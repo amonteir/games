@@ -1,4 +1,4 @@
-#include "Tictactoe.h"
+#include "Tictactoe.hpp"
 
 namespace angelogames {
 
@@ -79,37 +79,37 @@ namespace angelogames {
                     if (board->validatePlayerMove(human->playerMove)) { // check if board location was not previously taken by player or computer
 
                         board->createPlayerMove(human->playerMove, human->getPlayerPiece()); // saves move in the board
-                        //board->print();
                         screen->renderBoardPiece(human->playerMove, "human");
 
                         // check if human won with his/her move
                         if (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == -1) {
                             // player won
-                            std::cout << "YOU WON!!!" << std::endl;
+                            //std::cout << "YOU WON!!!" << std::endl;
                             screen->renderResults((int)PlayerResult::WON);
-                            SDL_Delay(2000);
+                            SDL_Delay(3000);
                             restart();
                             continue;
                         }
                         // check if it turns out to be a draw
                         if ((board->m_boardDepth == 0) && (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == 0)) {
-                            std::cout << "It's a draw!" << std::endl;
-                            SDL_Delay(2000);
+                            //std::cout << "It's a draw!" << std::endl;
+                            screen->renderResults((int)PlayerResult::DRAW);
+                            SDL_Delay(3000);
                             restart();
                             continue;
                         }
 
                         SDL_Delay(1000);
 
-                        //std::cout << "Computer played:" << std::endl;
                         computerMove = computer->calculateBestMove(board, human->getPlayerPiece()); // computer plays
                         screen->renderBoardPiece(computerMove, "computer");
 
                         // check if computer won with its move
                         if (board->evaluateWinCondition(human->getPlayerPiece(), computer->getComputerPiece()) == 1) {
                             // computer won
-                            std::cout << "Sorry but the computer won." << std::endl;
-                            SDL_Delay(2000);
+                            //std::cout << "Sorry but the computer won." << std::endl;
+                            screen->renderResults((int)PlayerResult::LOST);
+                            SDL_Delay(3000);
                             restart();
                             continue;
                         }

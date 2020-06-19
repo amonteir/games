@@ -1,9 +1,9 @@
 #pragma once
 #include <iostream>
-#include "Player.h"
-#include "Computer.h"
-#include "Board.h"
-#include "Screen.h"
+#include "Player.hpp"
+#include "Computer.hpp"
+#include "Board.hpp"
+#include "Screen.hpp"
 
 namespace angelogames {
 	class Tictactoe

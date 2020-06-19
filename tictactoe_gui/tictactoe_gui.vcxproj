@@ -123,12 +123,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_mixer-2.0.4\include;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_ttf-2.0.15\include;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_image-2.0.5\include;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_ttf-2.0.15\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_mixer-2.0.4\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_image-2.0.5\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;opengl32.lib;SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -158,11 +161,11 @@
     <ClCompile Include="Tictactoe.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h" />
-    <ClInclude Include="Computer.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Screen.h" />
-    <ClInclude Include="Tictactoe.h" />
+    <ClInclude Include="Board.hpp" />
+    <ClInclude Include="Computer.hpp" />
+    <ClInclude Include="Player.hpp" />
+    <ClInclude Include="Screen.hpp" />
+    <ClInclude Include="Tictactoe.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

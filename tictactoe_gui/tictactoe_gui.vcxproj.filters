@@ -35,19 +35,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Board.h">
+    <ClInclude Include="Board.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Computer.h">
+    <ClInclude Include="Computer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="Player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tictactoe.h">
+    <ClInclude Include="Screen.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Screen.h">
+    <ClInclude Include="Tictactoe.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

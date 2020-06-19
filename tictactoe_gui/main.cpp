@@ -2,7 +2,7 @@
 //
 
 #include <iostream>
-#include "Tictactoe.h"
+#include "Tictactoe.hpp"
 
 using namespace angelogames;
 

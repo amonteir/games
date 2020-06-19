@@ -1,4 +1,4 @@
-#include "Computer.h"
+#include "Computer.hpp"
 
 namespace angelogames {
 
@@ -43,12 +43,13 @@ namespace angelogames {
             int depth = -1;
             int boardSize = -1;
 
+            boardSize = board->getBoardSize();
+
             if (m_difficulty == (int)Difficulty::MEDIUM)
                 depth = 2;
-            else if (m_difficulty == (int)Difficulty::HARD) {
-                boardSize = board->getBoardSize();
+            else if (m_difficulty == (int)Difficulty::HARD)
                 depth = board->m_boardDepth - 1;
-            }
+            
 
             // run minimax in all empty positions and plays the optimal position
             // max at the top level is done with the if at the bottom of the for loop

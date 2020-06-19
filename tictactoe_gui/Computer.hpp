@@ -1,6 +1,6 @@
 #pragma once
 #include <algorithm>
-#include "Board.h"
+#include "Board.hpp"
 
 namespace angelogames {
 	class Computer

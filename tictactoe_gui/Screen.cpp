@@ -1,4 +1,4 @@
-#include "Screen.h"
+#include "Screen.hpp"
 
 namespace angelogames {
 
@@ -290,7 +290,6 @@ namespace angelogames {
 
 		// render main menu's background image
 		SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
-		//SDL_RenderPresent(m_renderer);
 
 		for (auto& menuData : m_optionsMenuTextData) {
 
@@ -631,13 +630,45 @@ namespace angelogames {
 	}
 
 	void Screen::renderResults(int result) {
-		reset();
+		//reset();
 
-		// render main menu's background image
-		SDL_RenderCopy(m_renderer, m_textureMainMenuBackground, nullptr, nullptr);
-		SDL_RenderPresent(m_renderer);
+		//Open the font
+		TTF_Font* font = TTF_OpenFont("fonts/Open_Sans/OpenSans-Bold.ttf", 40);
+		if (font == nullptr) 
+			std::cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
+		else {
+			//Render text
+			int textureWidth = -1;
+			int textureHeight = -1;
+			SDL_Color textColour = { 0, 255, 255 };
+			std::string text[3] = { "YOU WON !", "YOU LOST :(", "IT'S A DRAW"};
 
+			std::string textToTexture;
 
+			switch (result) {
+
+			case 0:
+				textToTexture = text[0];
+				break;
+			case 1:
+				textToTexture = text[1];
+				break;
+			case 2:
+				textToTexture = text[2];
+				break;
+			}
+
+			SDL_Texture * newTexture = createTextureFromText(textToTexture, font, textColour, &textureWidth, &textureHeight);
+
+			SDL_Rect renderQuad = { (m_SCREEN_WIDTH-textureWidth)/2, 20, textureWidth, textureHeight};
+
+			//Render to screen
+			SDL_RenderCopyEx(m_renderer, newTexture, nullptr, &renderQuad, 0, nullptr, SDL_FLIP_NONE);
+			SDL_RenderPresent(m_renderer);
+		
+			SDL_DestroyTexture(newTexture);
+		
+		}
 
 	}
 
