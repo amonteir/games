@@ -16,7 +16,7 @@ So this is the list of games I want to develop:
    ![Screenshot](minimax_tictactoe.png)
    
    * [GUI version](https://github.com/amonteir/games/tree/master/tictactoe_gui): Built on top of the console version but now with a  graphical interface using [SDL](https://www.libsdl.org/) and an additional Medium game difficulty. In terms of code, the major changes are that I added a new Screen class to handle everything related to the GUI, re-designed the game loop, and added C++11 features like a stack to control the game loop, auto, arrays of tuples, and enum classes for code readibility and data manipulation. 
-   <br/>Work in progress: add notifications like player won/computer won etc, add audio, add error log file.
+   <br/>Work in progress: add audio, add error log file.
 2. Pac-Man
 3. Basic platforms game
 4. Basic fighting game
