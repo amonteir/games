@@ -45,8 +45,12 @@ namespace angelogames {
 
             boardSize = board->getBoardSize();
 
-            if (m_difficulty == (int)Difficulty::MEDIUM)
-                depth = 2;
+            if (m_difficulty == (int)Difficulty::MEDIUM) {
+                if (board->m_boardDepth > 2)
+                    depth = 2;
+                else
+                    depth = board->m_boardDepth - 1;
+            }
             else if (m_difficulty == (int)Difficulty::HARD)
                 depth = board->m_boardDepth - 1;
             

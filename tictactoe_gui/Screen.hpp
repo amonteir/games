@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <iostream>
 #include <tuple>
 #include <stdexcept>
@@ -20,9 +21,8 @@ namespace angelogames {
 
 		const std::string PATH_MENU_BG_JPG = "img/buttons-close-up-controller-dark-596750.jpg";
 		const std::string PATH_BOARD_PNG = "img/1024x768-black-solid-color-background.jpg";
-		const std::string PATH_X_PIECE_PNG = "img/human.png";
+		const std::string PATH_X_PIECE_PNG = "img/player.png";
 		const std::string PATH_O_PIECE_PNG = "img/computer.png";
-		const std::string PLAYER_WON = "Congratulations, you WON!";
 
 		SDL_Window* m_window; //The window we'll be rendering to
 		SDL_Renderer* m_renderer; //The window renderer
@@ -36,6 +36,8 @@ namespace angelogames {
 		// string = the text we want to render, texture, x, y, w, h
 		std::array<std::tuple<std::string, SDL_Texture*, int, int, int, int>, 4> m_mainMenuTextData;
 		std::array<std::tuple<std::string, SDL_Texture*, int, int, int, int>, 5> m_optionsMenuTextData;
+
+		Mix_Chunk* m_sound;
 
 
 	public:
@@ -67,6 +69,7 @@ namespace angelogames {
 		int mainMenuEventHandler(SDL_Event* event);
 		int gameEventHandler(SDL_Event* event); // returns the position that the player wants to make in the board
 		void renderResults(int result);
+		void playSound(std::string sound);
 	};
 
 }

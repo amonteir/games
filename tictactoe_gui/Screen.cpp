@@ -4,12 +4,6 @@ namespace angelogames {
 
 	Screen::Screen() {
 
-		m_window = nullptr;
-		m_renderer = nullptr;
-
-
-		//m_OptionsMenu = -1;
-
 		if (!init())
 			std::cout << "Failed to initialize!" << std::endl;
 
@@ -28,6 +22,10 @@ namespace angelogames {
 		SDL_DestroyTexture(m_textureXPiece);
 		m_textureOPiece = nullptr;
 		SDL_DestroyTexture(m_textureOPiece);
+
+		Mix_FreeChunk(m_sound);
+		m_sound = nullptr;
+
 
 		m_renderer = nullptr;
 		SDL_DestroyRenderer(m_renderer);
@@ -75,6 +73,12 @@ namespace angelogames {
 				}
 				else
 				{
+
+					//SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, 'linear');
+
+					// set logical resolution
+					//SDL_RenderSetLogicalSize(m_renderer, 1024, 768);
+
 					//Initialize renderer color
 					SDL_SetRenderDrawColor(m_renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
@@ -94,17 +98,49 @@ namespace angelogames {
 						printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
 						success = false;
 					}
+
 					if (!loadMainMenu())
 						success = false;
-
 					if (!loadGameBoard())
 						success = false;
+
+					//Initialize SDL_mixer
+					if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+					{
+						printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+						success = false;
+					}
 
 				}
 			}
 		}
 		return success;
 	}
+
+	void Screen::playSound(std::string sound){
+		//The sound effects that will be used
+		m_sound = nullptr;
+
+		//Load sound effects
+		if (sound == "STEP_INTO_MENU")
+			m_sound = Mix_LoadWAV("sounds/woosh.wav");
+		else if (sound == "STEP_OUT_MENU")
+			m_sound = Mix_LoadWAV("sounds/woosh.wav");
+		else if (sound == "DRAW")
+			m_sound = Mix_LoadWAV("sounds/vader-not-have-come-back.wav");
+		else if (sound == "WON")
+			m_sound = Mix_LoadWAV("sounds/won.wav");
+		else if (sound == "LOST")
+			m_sound = Mix_LoadWAV("sounds/jabba-the-hutt-laughing.wav");
+		else if (sound == "QUIT")
+			m_sound = Mix_LoadWAV("sounds/dont-do-that.wav");
+
+		if (m_sound == nullptr)
+			printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+		
+		Mix_PlayChannel(-1, m_sound, 0);
+	}
+
 
 	bool Screen::loadMainMenu() {
 		//Loading success flag
@@ -282,7 +318,7 @@ namespace angelogames {
 		return -1;
 	}
 
-	void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) {
+void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) {
 		
 		reset();
 
@@ -496,6 +532,8 @@ namespace angelogames {
 	SDL_Rect Screen::getPlayerMove(int position) {
 
 		SDL_Rect stretchRect = { 0, 0, 0, 0 };
+
+		auto offset = 30;
 
 		auto x0 = m_SCREEN_WIDTH / 2 - m_BOARD_WIDTH / 2;
 		auto y0 = m_SCREEN_HEIGHT / 2 - m_BOARD_HEIGHT / 2;
