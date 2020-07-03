@@ -1,11 +1,14 @@
 #include "Screen.hpp"
 
+
 namespace angelogames {
 
 	Screen::Screen() {
 
+		log = new Logging("screen.log");
+
 		if (!init())
-			std::cout << "Failed to initialize!" << std::endl;
+			log->write("Failed to initialize screen.");
 
 	}
 
@@ -36,6 +39,10 @@ namespace angelogames {
 		IMG_Quit();
 		TTF_Quit();
 		SDL_Quit();
+
+		log->close();
+		delete log;
+		
 	}
 
 	bool Screen::init() {
@@ -46,7 +53,7 @@ namespace angelogames {
 		//Initialize SDL
 		if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		{
-			std::cout << "SDL could not initialize! SDL Error: " << SDL_GetError();
+			log->write(SDL_GetError());
 			success = false;
 		}
 		else
@@ -54,21 +61,21 @@ namespace angelogames {
 			//Set texture filtering to linear
 			if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
 			{
-				std::cout << "Warning: Linear texture filtering not enabled!" << std::endl;
+				log->write("Warning: Linear texture filtering not enabled!");
 			}
 
 			//Create window
 			m_window = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, m_SCREEN_WIDTH, m_SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 			if (m_window == nullptr)
 			{
-				std::cout << "Window could not be created! SDL Error: " << SDL_GetError() << std::endl;
+				log->write(SDL_GetError());
 				success = false;
 			}
 			else{
 				//Create renderer for window
 				m_renderer = SDL_CreateRenderer(m_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 				if (m_renderer == nullptr) {
-					std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
+					log->write(SDL_GetError());
 					success = false;
 				}
 				else
@@ -88,14 +95,14 @@ namespace angelogames {
 					int flags = IMG_INIT_JPG | IMG_INIT_PNG;
 					int initted = IMG_Init(flags);
 					if ((initted & flags) != flags) {
-						printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+						log->write(IMG_GetError());
 						success = false;
 					}
 
 					//Initialize SDL_ttf
 					if (TTF_Init() == -1)
 					{
-						printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+						log->write(TTF_GetError());
 						success = false;
 					}
 
@@ -107,7 +114,7 @@ namespace angelogames {
 					//Initialize SDL_mixer
 					if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
 					{
-						printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+						log->write(Mix_GetError());
 						success = false;
 					}
 
@@ -136,7 +143,7 @@ namespace angelogames {
 			m_sound = Mix_LoadWAV("sounds/dont-do-that.wav");
 
 		if (m_sound == nullptr)
-			printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+			log->write(Mix_GetError());
 		
 		Mix_PlayChannel(-1, m_sound, 0);
 	}
@@ -149,7 +156,7 @@ namespace angelogames {
 		//Open the font
 		TTF_Font* font = TTF_OpenFont("fonts/Open_Sans/OpenSans-Light.ttf", 28);
 		if (font == nullptr){
-			std::cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
+			log->write(TTF_GetError());
 			success = false;
 		}
 		else{
@@ -166,7 +173,7 @@ namespace angelogames {
 		//Load main menu background
 		m_textureMainMenuBackground = loadTexture(PATH_MENU_BG_JPG);
 		if (m_textureMainMenuBackground == nullptr) {
-			std::cout << "Error loading texture" << std::endl;
+			log->write("Error loading texture");
 		}
 
 		TTF_CloseFont(font); 
@@ -211,8 +218,8 @@ namespace angelogames {
 				x0 += std::get<4>(m_optionsMenuTextData[i - 1]);
 
 			if (i < 2)
-			m_optionsMenuTextData[i] = std::make_tuple(text[i], newTexture,
-				x0, y_coords[i], textureWidth, textureHeight);
+				m_optionsMenuTextData[i] = std::make_tuple(text[i], newTexture,
+					x0, y_coords[i], textureWidth, textureHeight);
 			else
 				m_optionsMenuTextData[i] = std::make_tuple(text[i], newTexture,
 					x0 + 30, y_coords[i], textureWidth, textureHeight);
@@ -228,7 +235,7 @@ namespace angelogames {
 		//Render text surface
 		SDL_Surface* textSurface = TTF_RenderUTF8_Blended(font, textToTexture.c_str(), textColor);
 		if (textSurface == nullptr)
-			std::cout << "Unable to render text surface! SDL_ttf Error: " << TTF_GetError() << std::endl;
+			log->write(TTF_GetError());
 		else
 		{
 			//Create and save texture from surface pixels
@@ -467,20 +474,20 @@ void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) 
 		m_textureBoard = loadTexture(PATH_BOARD_PNG);
 
 		if (m_textureBoard == nullptr) {
-			std::cout << "Error loading texture" << std::endl;
+			log->write("Error loading texture");
 			success = false;
 		}
 
 		// load piece textures to memory to be used by the render when player or computer plays
 		m_textureXPiece = loadTexture(PATH_X_PIECE_PNG);
 		if (m_textureXPiece == nullptr){
-			printf("Failed to load texture image!\n");
+			log->write("Failed to load texture image!");
 		success = false;
 		}
 
 		m_textureOPiece = loadTexture(PATH_O_PIECE_PNG);
 		if (m_textureOPiece == nullptr){
-			printf("Failed to load texture image!\n");
+			log->write("Failed to load texture image!");
 			success = false;
 		}
 		return success;
@@ -514,13 +521,13 @@ void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) 
 		SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 
 		if (loadedSurface == nullptr)
-			std::cout << "Error" << std::endl;
+			log->write("Error");
 		else {
 			//Create texture from surface pixels
 			newTexture = SDL_CreateTextureFromSurface(m_renderer, loadedSurface);
 
 			if (newTexture == nullptr)
-				std::cout << "Error" << std::endl;
+				log->write("Error");
 
 			SDL_FreeSurface(loadedSurface);
 		}
@@ -672,8 +679,8 @@ void Screen::renderOptionsMenu(SDL_Rect* clip, double angle, SDL_Point* center) 
 
 		//Open the font
 		TTF_Font* font = TTF_OpenFont("fonts/Open_Sans/OpenSans-Bold.ttf", 40);
-		if (font == nullptr) 
-			std::cout << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
+		if (font == nullptr)
+			log->write(TTF_GetError());
 		else {
 			//Render text
 			int textureWidth = -1;

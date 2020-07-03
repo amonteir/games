@@ -4,6 +4,7 @@
 #include "Computer.hpp"
 #include "Board.hpp"
 #include "Screen.hpp"
+#include "Logging.hpp"
 
 namespace angelogames {
 	class Tictactoe
@@ -13,6 +14,8 @@ namespace angelogames {
 		std::stack<int> gameStack; // this stack is used to keep track of the current and previous states of the game (play or menus)
 
 		const enum class PlayerResult {WON, LOST, DRAW };
+
+		Logging* log;
 
 	public:
 		// this class contains a pointer to each element of the game: the player,

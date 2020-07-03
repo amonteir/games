@@ -3,10 +3,14 @@
 namespace angelogames {
 
     Tictactoe::Tictactoe() {
+        log = new Logging("tictactoe.log");
+
         human = new Player();
         computer = new Computer(1);
         board = new Board();
         screen = new Screen();
+        log->write("Tic Tac Toe game initiated successfully.");
+
     }
 
     Tictactoe::~Tictactoe() {
@@ -14,6 +18,10 @@ namespace angelogames {
         delete computer;
         delete board;
         delete screen;
+        log->write("Tic Tac Toe game deleted successfully.");
+
+        log->close();
+        delete log;
     }
 
     void Tictactoe::play() {
@@ -130,7 +138,7 @@ namespace angelogames {
 
                     }
                     else { // board location picked by player is taken, try a new number
-                        std::cout << "Position taken, try again. " << std::flush;
+                        //std::cout << "Position taken, try again. " << std::flush;
                     }
                 }
             }
@@ -142,5 +150,6 @@ namespace angelogames {
         computer->reset();
         gameStack.pop(); // pops PLAY from the stack and goes back to main menu (always stays at the bottom of the stack)
         screen->renderMainMenu(NULL, 0, NULL);
+        log->write("Game restarted successfully.");
     }
  }

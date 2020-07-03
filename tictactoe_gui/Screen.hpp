@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <stack>
 #include <array>
+#include "Logging.hpp"
 
 namespace angelogames {
 
@@ -39,6 +40,7 @@ namespace angelogames {
 
 		Mix_Chunk* m_sound;
 
+		Logging* log;
 
 	public:
 		const enum class MainMenu { GAME_NAME, PLAY, OPTIONS, QUIT, Count};
@@ -57,6 +59,8 @@ namespace angelogames {
 		bool loadMainMenu();
 		void createMainMenuTuples(TTF_Font* font, SDL_Color textColour);
 		void createOptionsMenuTuples(TTF_Font* font, SDL_Color textColour);
+
+		
 		
 	public:
 		Screen();

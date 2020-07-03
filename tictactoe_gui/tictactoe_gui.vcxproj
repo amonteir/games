@@ -72,12 +72,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(CommonExecutablePath)</ExecutablePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <ReferencePath>C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_ttf-2.0.15\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_mixer-2.0.4\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2_image-2.0.5\lib\x86;C:\Users\angelo\source\repos\amonteir\games\tictactoe_gui\lib\SDL2\lib\x86;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -155,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Computer.cpp" />
+    <ClCompile Include="Logging.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Screen.cpp" />
@@ -163,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="Board.hpp" />
     <ClInclude Include="Computer.hpp" />
+    <ClInclude Include="Logging.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Screen.hpp" />
     <ClInclude Include="Tictactoe.hpp" />
